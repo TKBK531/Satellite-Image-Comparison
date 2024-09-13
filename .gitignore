@@ -179,6 +179,8 @@ poetry.toml
 # ruff
 .ruff_cache/
 
+image_comparison_report.txt
+
 # LSP config files
 pyrightconfig.json
 satellite_images/
