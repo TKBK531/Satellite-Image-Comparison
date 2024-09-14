@@ -3,6 +3,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 import images as img
 
+# Constants for color ranges in HSV space
+GREEN_RANGE = (35, 85)  # Range of hue values for green color
+BLUE_RANGE = (85, 130)  # Range of hue values for blue color
+
+# Constants for histogram bins and ranges
+HUE_BINS = 360  # Number of bins for hue histogram
+HUE_RANGE = [0, 360]  # Range of hue values
+SAT_BINS = 256  # Number of bins for saturation histogram
+SAT_RANGE = [0, 256]  # Range of saturation values
+VAL_BINS = 256  # Number of bins for value histogram
+VAL_RANGE = [0, 256]  # Range of value (brightness) values
+
+# Constants for peak adjustment in histograms
+HUE_PEAK_ADJUST = 15  # Adjustment value for hue peak
+SAT_PEAK_ADJUST = 50  # Adjustment value for saturation peak
+VAL_PEAK_ADJUST = 50  # Adjustment value for value (brightness) peak
+
+# Constants for morphological operations
+MORPH_KERNEL_SIZE = (3, 3)  # Kernel size for morphological operations
+
+# Constants for Canny edge detection
+CANNY_THRESHOLD1 = 100
+CANNY_THRESHOLD2 = 200
+
 
 def get_channel_histogram(channel, bins, range):
     """Calculate and normalize the histogram of a given channel."""
@@ -17,9 +41,9 @@ def calculate_histograms(hsv_image):
     s_channel = hsv_image[:, :, 1]
     v_channel = hsv_image[:, :, 2]
 
-    hue_hist = get_channel_histogram(h_channel, 180, [0, 180])
-    s_hist = get_channel_histogram(s_channel, 256, [0, 256])
-    v_hist = get_channel_histogram(v_channel, 256, [0, 256])
+    hue_hist = get_channel_histogram(h_channel, HUE_BINS, HUE_RANGE)
+    s_hist = get_channel_histogram(s_channel, SAT_BINS, SAT_RANGE)
+    v_hist = get_channel_histogram(v_channel, VAL_BINS, VAL_RANGE)
 
     return hue_hist, s_hist, v_hist
 
@@ -28,22 +52,28 @@ def dynamic_color_ranges(hsv_image):
     """Set dynamic color ranges based on the histogram."""
     hue_hist, s_hist, v_hist = calculate_histograms(hsv_image)
 
-    green_range = (35, 85)
-    blue_range = (85, 130)
+    green_range = GREEN_RANGE
+    blue_range = BLUE_RANGE
 
     green_peak = np.argmax(hue_hist[green_range[0] : green_range[1]]) + green_range[0]
     blue_peak = np.argmax(hue_hist[blue_range[0] : blue_range[1]]) + blue_range[0]
 
-    lower_green_hue, upper_green_hue = max(0, green_peak - 10), min(
-        179, green_peak + 10
+    lower_green_hue, upper_green_hue = max(0, green_peak - HUE_PEAK_ADJUST), min(
+        179, green_peak + HUE_PEAK_ADJUST
     )
-    lower_blue_hue, upper_blue_hue = max(0, blue_peak - 10), min(179, blue_peak + 10)
+    lower_blue_hue, upper_blue_hue = max(0, blue_peak - HUE_PEAK_ADJUST), min(
+        179, blue_peak + HUE_PEAK_ADJUST
+    )
 
     s_peak = np.argmax(s_hist)
     v_peak = np.argmax(v_hist)
 
-    lower_s, upper_s = max(0, s_peak - 50), min(255, s_peak + 50)
-    lower_v, upper_v = max(0, v_peak - 50), min(255, v_peak + 50)
+    lower_s, upper_s = max(0, s_peak - SAT_PEAK_ADJUST), min(
+        255, s_peak + SAT_PEAK_ADJUST
+    )
+    lower_v, upper_v = max(0, v_peak - VAL_PEAK_ADJUST), min(
+        255, v_peak + VAL_PEAK_ADJUST
+    )
 
     lower_green = np.array([lower_green_hue, lower_s, lower_v])
     upper_green = np.array([upper_green_hue, upper_s, upper_v])
@@ -74,13 +104,13 @@ def calculate_percentage_change(area1, area2):
 
 def edge_detection(image):
     """Apply Canny edge detection to the image."""
-    edges = cv2.Canny(image, 100, 200)
+    edges = cv2.Canny(image, CANNY_THRESHOLD1, CANNY_THRESHOLD2)
     return edges
 
 
 def morphological_operations(mask):
     """Apply morphological operations to refine the mask."""
-    kernel = np.ones((5, 5), np.uint8)
+    kernel = np.ones(MORPH_KERNEL_SIZE, np.uint8)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     return mask
@@ -324,4 +354,5 @@ def process_images(image_paths):
 
 if __name__ == "__main__":
     image_paths = [img.before_zambia_drought, img.after_zambia_drought]
+    # image_paths = [img.before_klamath_dams, img.after_klamath_dams]
     process_images(image_paths)
