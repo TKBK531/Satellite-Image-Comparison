@@ -381,7 +381,7 @@ def process_images(image_paths):
         print(f"An error occurred: {e}")
 
 
-if __name__ == "__main__":
-    image_paths = [img.before_zambia_drought, img.after_zambia_drought]
-    # image_paths = [img.before_klamath_dams, img.after_klamath_dams]
-    process_images(image_paths)
+# if __name__ == "__main__":
+#     image_paths = [img.before_zambia_drought, img.after_zambia_drought]
+#     # image_paths = [img.before_klamath_dams, img.after_klamath_dams]
+#     process_images(image_paths)
