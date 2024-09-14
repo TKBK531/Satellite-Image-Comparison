@@ -1,4 +1,4 @@
-# ImageProcessingProject
+# Satellite Image Analysis for Environmental Change Detection
 
 ## Overview
 
