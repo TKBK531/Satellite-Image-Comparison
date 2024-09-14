@@ -12,3 +12,6 @@ after_klamath_dams = "satellite_images\klamath_dams_oli2_20240225_lrg.jpg"
 
 before_zambia_drought = "satellite_images\Zambia_Draught_2023.jpg"
 after_zambia_drought = "satellite_images\Zambia_Draught_2024.jpg"
+
+before_oklahoma = "satellite_images\moore-oklahoma-before-tornado.jpg"
+after_oklahoma = "satellite_images\moore-oklahoma-after-tornado.jpg"
