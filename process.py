@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import images as img
+from assumptions import ASSUMPTIONS
 
 # Constants for color ranges in HSV space
 GREEN_RANGE = (35, 85)  # Range of hue values for green color
@@ -200,40 +201,75 @@ def plot_percentage_changes(
     """Plot the percentage changes in vegetation, water, and land areas."""
     plt.figure(figsize=(16, 9))
 
-    plt.subplot(1, 3, 1)
-    plt.bar(
-        ["Before", "After"],
-        [green_area1, green_area2],
-        color="green",
-    )
-    plt.xlabel("Image")
-    plt.ylabel("Area")
-    plt.title("Vegetation Area")
+    # Data for plotting
+    areas = [
+        (green_area1, green_area2, "Vegetation Area", "green"),
+        (blue_area1, blue_area2, "Water Area", "blue"),
+        (land_area1, land_area2, "Land Area", "orange"),
+    ]
 
-    plt.subplot(1, 3, 2)
-    plt.bar(
-        ["Before", "After"],
-        [blue_area1, blue_area2],
-        color="blue",
-    )
-    plt.xlabel("Image")
-    plt.ylabel("Area")
-    plt.title("Water Area")
-
-    plt.subplot(1, 3, 3)
-    plt.bar(
-        ["Before", "After"],
-        [land_area1, land_area2],
-        color="orange",
-    )
-    plt.xlabel("Image")
-    plt.ylabel("Area")
-    plt.title("Land Area")
+    # Loop through the data and create subplots
+    for i, (area1, area2, title, color) in enumerate(areas, start=1):
+        plt.subplot(1, 3, i)
+        plt.bar(["Before", "After"], [area1, area2], color=color)
+        plt.xlabel("Image")
+        plt.ylabel("Area")
+        plt.title(title)
 
     plt.tight_layout()
     manager = plt.get_current_fig_manager()
     manager.window.state("zoomed")
     plt.show()
+
+
+def generate_report(
+    green_area1, green_area2, blue_area1, blue_area2, land_area1, land_area2
+):
+    """Generate a detailed report of the area changes."""
+    veg_change = calculate_percentage_change(green_area1, green_area2)
+    water_change = calculate_percentage_change(blue_area1, blue_area2)
+    land_change = calculate_percentage_change(land_area1, land_area2)
+
+    # Determine the assumption based on the changes
+    if veg_change < 0 and water_change < 0:
+        assumption = ASSUMPTIONS["drought"]
+    elif land_change > 0:
+        assumption = ASSUMPTIONS["urbanization"]
+    elif veg_change > 0 or water_change > 0:
+        assumption = ASSUMPTIONS["good_rain"]
+    else:
+        assumption = ASSUMPTIONS["stable"]
+
+    report = [
+        "Image Comparison Report",
+        "=======================",
+        "",
+        "Vegetation Area:",
+        f"  Before: {green_area1:.2f} pixels",
+        f"  After: {green_area2:.2f} pixels",
+        f"  Change: {veg_change:.2f}%",
+        "",
+        "Water Area:",
+        f"  Before: {blue_area1:.2f} pixels",
+        f"  After: {blue_area2:.2f} pixels",
+        f"  Change: {water_change:.2f}%",
+        "",
+        "Land Area:",
+        f"  Before: {land_area1:.2f} pixels",
+        f"  After: {land_area2:.2f} pixels",
+        f"  Change: {land_change:.2f}%",
+        "",
+        "Summary:",
+        f"  The vegetation area changed by {veg_change:.2f}%.",
+        f"  The water area changed by {water_change:.2f}%.",
+        f"  The land area changed by {land_change:.2f}%.",
+        "",
+        "Assumption:",
+        f"  {assumption}",
+    ]
+
+    with open("image_comparison_report.txt", "w") as file:
+        file.write("\n".join(report))
 
 
 def process_images(image_paths):
@@ -286,17 +322,9 @@ def process_images(image_paths):
         land_area1 = sum(cv2.contourArea(c) for c in contours_land1)
         land_area2 = sum(cv2.contourArea(c) for c in contours_land2)
 
-        veg_change = calculate_percentage_change(green_area1, green_area2)
-        water_change = calculate_percentage_change(blue_area1, blue_area2)
-        land_change = calculate_percentage_change(land_area1, land_area2)
-
-        report = [
-            f"Percentage change in vegetation: {veg_change:.2f}%",
-            f"Percentage change in water: {water_change:.2f}%",
-            f"Percentage change in land: {land_change:.2f}%",
-        ]
-        with open("image_comparison_report.txt", "w") as file:
-            file.write("\n".join(report))
+        generate_report(
+            green_area1, green_area2, blue_area1, blue_area2, land_area1, land_area2
+        )
 
         images = [
             image1_rgb,
@@ -320,9 +348,6 @@ def process_images(image_paths):
         ]
 
         plot_images(images, titles)
-        plot_percentage_changes(
-            green_area1, green_area2, blue_area1, blue_area2, land_area1, land_area2
-        )
 
         # Plot vegetation contours
         plot_contour_images(
@@ -346,6 +371,10 @@ def process_images(image_paths):
             land_contours2,
             "Land Contours Image 1",
             "Land Contours Image 2",
+        )
+
+        plot_percentage_changes(
+            green_area1, green_area2, blue_area1, blue_area2, land_area1, land_area2
         )
 
     except Exception as e:
