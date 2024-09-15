@@ -21,3 +21,10 @@ MORPH_KERNEL_SIZE = (3, 3)  # Kernel size for morphological operations
 # Constants for Canny edge detection
 CANNY_THRESHOLD1 = 100
 CANNY_THRESHOLD2 = 200
+
+
+# Assumption thresholds in percentage change
+SEVERE_DROUGHT_THRESHOLD = -20
+POSSIBLE_DROUGHT_THRESHOLD = -10
+
+URBANIZATION_THRESHOLD = 10

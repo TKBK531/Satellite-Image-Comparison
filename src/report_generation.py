@@ -1,11 +1,13 @@
 from .image_processing import calculate_percentage_change
-
+from .config import *
 
 # Assumptions based on area changes
 ASSUMPTIONS = {
-    "drought": "The water and vegetation areas have decreased, indicating a possible drought.",
+    "severe_drought": "Both water and vegetation areas have significantly decreased, indicating a severe drought.",
+    "mild_drought": "Both water and vegetation areas have decreased, indicating a possible drought.",
     "urbanization": "The land area has increased, indicating a potential future urbanization spot.",
     "good_rain": "The vegetation area has increased, indicating good rainfall.",
+    "water_increase": "The water area has increased, indicating possible flooding or reservoir filling.",
     "stable": "The areas have remained relatively stable with no significant changes.",
 }
 
@@ -19,12 +21,22 @@ def generate_report(
     land_change = calculate_percentage_change(land_area1, land_area2)
 
     # Determine the assumption based on the changes
-    if veg_change < 0 and water_change < 0:
-        assumption = ASSUMPTIONS["drought"]
-    elif land_change > 0:
+    if (
+        veg_change < SEVERE_DROUGHT_THRESHOLD
+        and water_change < SEVERE_DROUGHT_THRESHOLD
+    ):
+        assumption = ASSUMPTIONS["severe_drought"]
+    elif (
+        veg_change < POSSIBLE_DROUGHT_THRESHOLD
+        and water_change < POSSIBLE_DROUGHT_THRESHOLD
+    ):
+        assumption = ASSUMPTIONS["mild_drought"]
+    elif land_change > URBANIZATION_THRESHOLD:
         assumption = ASSUMPTIONS["urbanization"]
-    elif veg_change > 0 or water_change > 0:
+    elif veg_change > 0 and water_change <= 0:
         assumption = ASSUMPTIONS["good_rain"]
+    elif water_change > 0 and veg_change <= 0:
+        assumption = ASSUMPTIONS["water_increase"]
     else:
         assumption = ASSUMPTIONS["stable"]
 
