@@ -22,13 +22,13 @@ def process_images(image_paths):
         green_mask1, blue_mask1, land_mask1 = segment_image(image1)
         green_mask2, blue_mask2, land_mask2 = segment_image(image2)
 
-        green_mask1 = morphological_operations(green_mask1)
-        blue_mask1 = morphological_operations(blue_mask1)
-        land_mask1 = morphological_operations(land_mask1)
+        green_mask1 = refine_mask(green_mask1)
+        blue_mask1 = refine_mask(blue_mask1)
+        land_mask1 = refine_mask(land_mask1)
 
-        green_mask2 = morphological_operations(green_mask2)
-        blue_mask2 = morphological_operations(blue_mask2)
-        land_mask2 = morphological_operations(land_mask2)
+        green_mask2 = refine_mask(green_mask2)
+        blue_mask2 = refine_mask(blue_mask2)
+        land_mask2 = refine_mask(land_mask2)
 
         (
             green_contours1,

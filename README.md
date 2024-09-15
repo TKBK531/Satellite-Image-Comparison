@@ -29,6 +29,8 @@ The project employs Python libraries such as OpenCV and NumPy to preprocess sate
 5. **Validation:** Detected changes will be compared with ground truth data for validation.
 6. **Case Studies:** The developed approach will be demonstrated by analyzing selected regions for environmental changes.
 
+### Processing Steps
+
 ### Technologies
 
 - **Programming Language:** Python

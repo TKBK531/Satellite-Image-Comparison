@@ -1,4 +1,3 @@
-# from process import process_images
 import src.images as img
 from src.process_images import process_images
 

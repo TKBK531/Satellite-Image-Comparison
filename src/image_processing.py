@@ -83,7 +83,7 @@ def edge_detection(image):
     return edges
 
 
-def morphological_operations(mask):
+def refine_mask(mask):
     """Apply morphological operations to refine the mask."""
     kernel = np.ones(MORPH_KERNEL_SIZE, np.uint8)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
