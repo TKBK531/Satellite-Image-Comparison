@@ -1,4 +1,4 @@
-from .image_processing import calculate_percentage_change
+from .image_processing import calculate_percentage_change, calculate_real_area
 from .config import *
 
 # Assumptions based on area changes
@@ -13,7 +13,13 @@ ASSUMPTIONS = {
 
 
 def generate_report(
-    green_area1, green_area2, blue_area1, blue_area2, land_area1, land_area2
+    green_area1,
+    green_area2,
+    blue_area1,
+    blue_area2,
+    land_area1,
+    land_area2,
+    scale_factor,
 ):
     """Generate a detailed report of the area changes."""
     veg_change = calculate_percentage_change(green_area1, green_area2)
@@ -40,23 +46,34 @@ def generate_report(
     else:
         assumption = ASSUMPTIONS["stable"]
 
+    unit = "square meters" if scale_factor != 0 else "pixels"
+
+    if scale_factor != 0:
+
+        green_area1 = calculate_real_area(green_area1, scale_factor)
+        green_area2 = calculate_real_area(green_area2, scale_factor)
+        blue_area1 = calculate_real_area(blue_area1, scale_factor)
+        blue_area2 = calculate_real_area(blue_area2, scale_factor)
+        land_area1 = calculate_real_area(land_area1, scale_factor)
+        land_area2 = calculate_real_area(land_area2, scale_factor)
+
     report = [
         "Image Comparison Report",
         "=======================",
         "",
         "Vegetation Area:",
-        f"  Before: {green_area1:.2f} pixels",
-        f"  After: {green_area2:.2f} pixels",
+        f"  Before: {green_area1:.2f} {unit}",
+        f"  After: {green_area2:.2f} {unit}",
         f"  Change: {veg_change:.2f}%",
         "",
         "Water Area:",
-        f"  Before: {blue_area1:.2f} pixels",
-        f"  After: {blue_area2:.2f} pixels",
+        f"  Before: {blue_area1:.2f} {unit}",
+        f"  After: {blue_area2:.2f} {unit}",
         f"  Change: {water_change:.2f}%",
         "",
         "Land Area:",
-        f"  Before: {land_area1:.2f} pixels",
-        f"  After: {land_area2:.2f} pixels",
+        f"  Before: {land_area1:.2f} {unit}",
+        f"  After: {land_area2:.2f} {unit}",
         f"  Change: {land_change:.2f}%",
         "",
         "Summary:",

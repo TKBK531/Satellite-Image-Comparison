@@ -71,6 +71,13 @@ def segment_image(image):
     return green_mask, blue_mask, land_mask
 
 
+def calculate_real_area(pixel_area, scale_factor):
+    """Calculate the real-world area in square meters."""
+    if scale_factor == 0:
+        return pixel_area
+    return pixel_area * scale_factor
+
+
 def calculate_percentage_change(area1, area2):
     """Calculate the percentage change between two areas."""
     change = ((area2 - area1) / area1) * 100 if area1 != 0 else 0

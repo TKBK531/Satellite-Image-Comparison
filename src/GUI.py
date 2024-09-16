@@ -7,7 +7,7 @@ from .process_images import process_images
 class ImageProcessorApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Image Processor")
+        self.root.title("SATELLITE IMAGE ANALYSIS")
 
         self.image_paths = [None, None]
         self.scale_factor = tk.DoubleVar()

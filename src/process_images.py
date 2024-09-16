@@ -57,7 +57,13 @@ def process_images(image_paths, scale_factor):
         land_area2 = sum(cv2.contourArea(c) for c in contours_land2)
 
         generate_report(
-            green_area1, green_area2, blue_area1, blue_area2, land_area1, land_area2
+            green_area1,
+            green_area2,
+            blue_area1,
+            blue_area2,
+            land_area1,
+            land_area2,
+            scale_factor,
         )
 
         images = [
