@@ -4,10 +4,12 @@ from .report_generation import *
 from .plots import *
 
 
-def process_images(image_paths):
+def process_images(image_paths, scale_factor):
     """Load and segment multiple images, then calculate and plot changes."""
     if len(image_paths) != 2:
         raise ValueError("image_paths array must contain exactly 2 images.")
+
+    print(scale_factor)
 
     try:
         image1 = cv2.imread(image_paths[0])
